@@ -1,75 +1,66 @@
-# React + TypeScript + Vite
+# IT Operations Management Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An internal-style IT operations dashboard, built as a self-directed frontend project to demonstrate real enterprise IT workflows — ticket management, asset inventory, user administration, and reporting — drawing directly on real systems administration and IT operations experience.
 
-Currently, two official plugins are available:
+**Live site:** https://ellyrich13.github.io/it-ops-dashboard/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Overview
 
-## React Compiler
+Simulates the kind of internal admin tool IT departments use daily: tracking support tickets, managing hardware/software assets, administering users, and reporting on operational metrics like resolution time and ticket volume by category.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Sidebar navigation with 6 core sections: Dashboard, Users, Tickets, Assets, Reports, Settings
+- Live data visualizations (bar, pie, and line charts) via Recharts
+- Ticket and asset tables with color-coded priority/status badges
+- Mobile-responsive collapsible sidebar with overlay
+- Horizontally scrollable tables on small screens
+- Full light/dark mode toggle
+- Scroll-triggered fade-in animations
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [React Router](https://reactrouter.com/) — client-side routing
+- [Recharts](https://recharts.org/) — data visualization
+- [Vite](https://vitejs.dev/) — build tooling
+- [Tailwind CSS](https://tailwindcss.com/) — styling
+- [Lucide React](https://lucide.dev/) — icons
+- Deployed via [GitHub Pages](https://pages.github.com/)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Project Structure
+src/
+├── components/ # Sidebar, FadeIn
+├── pages/ # Dashboard, Users, Tickets, Assets, Reports, Settings
+├── data/ # Typed sample data per page
+├── types/ # Shared TypeScript interfaces
+├── App.tsx
+└── main.tsx
+## Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+git clone https://github.com/Ellyrich13/it-ops-dashboard.git
+cd it-ops-dashboard
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Deployment Notes
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Deployed to GitHub Pages via the `gh-pages` package, with a `404.html` redirect workaround in `public/` to correctly restore deep-linked routes on direct page load.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm run deploy
 ```
+
+## Related Projects
+
+This is one of three linked projects in a broader self-directed portfolio series:
+
+- [Portfolio](https://ellyrich13.github.io/portfolio/) — personal portfolio site
+- [CloudSecure](https://ellyrich13.github.io/cloudsecure/) — cybersecurity SaaS landing page
+
+## Contact
+
+- Email: elliothammond13@gmail.com
+- LinkedIn: [linkedin.com/in/elliot-hammond](https://linkedin.com/in/elliot-hammond)
