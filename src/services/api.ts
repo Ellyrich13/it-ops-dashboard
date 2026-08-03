@@ -1,29 +1,31 @@
-import { tickets as mockTickets } from '../data/tickets'
-import { assets as mockAssets } from '../data/assets'
-import { users as mockUsers } from '../data/users'
 import type { Ticket, Asset, User } from '../types'
 
-function simulateRequest<T>(data: T, delayMs = 600): Promise<T> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(data), delayMs)
-  })
-}
-
 export async function fetchTickets(): Promise<Ticket[]> {
-  return simulateRequest(mockTickets)
+  const res = await fetch('/api/tickets')
+  if (!res.ok) throw new Error('Failed to fetch tickets')
+  return res.json()
 }
 
 export async function fetchAssets(): Promise<Asset[]> {
-  return simulateRequest(mockAssets)
+  const res = await fetch('/api/assets')
+  if (!res.ok) throw new Error('Failed to fetch assets')
+  return res.json()
 }
 
 export async function fetchUsers(): Promise<User[]> {
-  return simulateRequest(mockUsers)
+  const res = await fetch('/api/users')
+  if (!res.ok) throw new Error('Failed to fetch users')
+  return res.json()
 }
 
 export async function createTicket(ticket: Omit<Ticket, 'id'>): Promise<Ticket> {
-  const newTicket: Ticket = { ...ticket, id: `#${1000 + Math.floor(Math.random() * 9000)}` }
-  return simulateRequest(newTicket, 400)
+  const res = await fetch('/api/tickets', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(ticket),
+  })
+  if (!res.ok) throw new Error('Failed to create ticket')
+  return res.json()
 }
 
 export function validateTicketForm(user: string, issue: string): { user?: string; issue?: string } {
