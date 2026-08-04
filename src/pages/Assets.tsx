@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Plus, Search, Inbox } from 'lucide-react'
+import { Plus, Search, Inbox, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import FadeIn from '../components/FadeIn'
 import { assets } from '../data/assets'
+import type { Asset } from '../types'
 
 const statusColor: Record<string, string> = {
   Active: 'bg-teal-500/10 text-teal-600 dark:text-teal-400',
@@ -11,14 +12,35 @@ const statusColor: Record<string, string> = {
 
 function Assets() {
   const [search, setSearch] = useState('')
+  const [sortKey, setSortKey] = useState<keyof Asset>('id')
+  const [sortAsc, setSortAsc] = useState(true)
+  const [page, setPage] = useState(1)
+  const pageSize = 4
 
-  const filteredAssets = assets.filter(
-    (a) =>
-      a.name.toLowerCase().includes(search.toLowerCase()) ||
-      a.id.toLowerCase().includes(search.toLowerCase()) ||
-      a.assignedTo.toLowerCase().includes(search.toLowerCase()) ||
-      a.type.toLowerCase().includes(search.toLowerCase())
-  )
+  function handleSort(key: keyof Asset) {
+    if (sortKey === key) {
+      setSortAsc(!sortAsc)
+    } else {
+      setSortKey(key)
+      setSortAsc(true)
+    }
+  }
+
+  const filteredAssets = assets
+    .filter(
+      (a) =>
+        a.name.toLowerCase().includes(search.toLowerCase()) ||
+        a.id.toLowerCase().includes(search.toLowerCase()) ||
+        a.assignedTo.toLowerCase().includes(search.toLowerCase()) ||
+        a.type.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      const result = String(a[sortKey]).localeCompare(String(b[sortKey]))
+      return sortAsc ? result : -result
+    })
+
+  const totalPages = Math.max(1, Math.ceil(filteredAssets.length / pageSize))
+  const paginatedAssets = filteredAssets.slice((page - 1) * pageSize, page * pageSize)
 
   return (
     <div className="md:ml-56 pt-20 md:pt-8 p-8 min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
@@ -37,7 +59,10 @@ function Assets() {
         <input
           type="text"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value)
+            setPage(1)
+          }}
           placeholder="Search assets..."
           aria-label="Search assets"
           className="w-full pl-9 pr-4 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm placeholder-slate-400"
@@ -55,15 +80,27 @@ function Assets() {
             <table className="w-full text-sm min-w-[650px]">
               <thead className="bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-left">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Asset ID</th>
-                  <th className="px-5 py-3 font-medium">Name</th>
-                  <th className="px-5 py-3 font-medium">Type</th>
-                  <th className="px-5 py-3 font-medium">Assigned To</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
+                  {([
+                    ['id', 'Asset ID'],
+                    ['name', 'Name'],
+                    ['type', 'Type'],
+                    ['assignedTo', 'Assigned To'],
+                    ['status', 'Status'],
+                  ] as [keyof Asset, string][]).map(([key, label]) => (
+                    <th key={key} className="px-5 py-3 font-medium">
+                      <button
+                        onClick={() => handleSort(key)}
+                        className="flex items-center gap-1 hover:text-slate-900 dark:hover:text-white transition"
+                      >
+                        {label}
+                        <ArrowUpDown size={12} className={sortKey === key ? 'text-teal-500' : 'text-slate-400'} />
+                      </button>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {filteredAssets.map((a) => (
+                {paginatedAssets.map((a) => (
                   <tr key={a.id} className="border-t border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
                     <td className="px-5 py-4 text-slate-700 dark:text-slate-300 font-medium">{a.id}</td>
                     <td className="px-5 py-4 text-slate-700 dark:text-slate-300">{a.name}</td>
@@ -76,6 +113,28 @@ function Assets() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div className="flex items-center justify-between mt-4 text-sm text-slate-500 dark:text-slate-400">
+            <span>Page {page} of {totalPages}</span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                aria-label="Previous page"
+                className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                aria-label="Next page"
+                className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
         </FadeIn>
       )}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, AlertCircle, Inbox, Search } from 'lucide-react'
+import { Plus, AlertCircle, Inbox, Search, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import FadeIn from '../components/FadeIn'
 import Spinner from '../components/Spinner'
 import NewTicketModal from '../components/NewTicketModal'
@@ -24,6 +24,10 @@ function Tickets() {
   const [error, setError] = useState<string | null>(null)
   const [showModal, setShowModal] = useState(false)
   const [search, setSearch] = useState('')
+  const [sortKey, setSortKey] = useState<keyof Ticket>('id')
+  const [sortAsc, setSortAsc] = useState(true)
+  const [page, setPage] = useState(1)
+  const pageSize = 4
 
   function loadTickets() {
     setLoading(true)
@@ -34,16 +38,37 @@ function Tickets() {
       .finally(() => setLoading(false))
   }
 
+  function handleSort(key: keyof Ticket) {
+    if (sortKey === key) {
+      setSortAsc(!sortAsc)
+    } else {
+      setSortKey(key)
+      setSortAsc(true)
+    }
+  }
+
   useEffect(() => {
     loadTickets()
   }, [])
 
-  const filteredTickets = tickets.filter(
-    (t) =>
-      t.user.toLowerCase().includes(search.toLowerCase()) ||
-      t.issue.toLowerCase().includes(search.toLowerCase()) ||
-      t.id.toLowerCase().includes(search.toLowerCase())
-  )
+  useEffect(() => {
+    setPage(1)
+  }, [search])
+
+  const filteredTickets = tickets
+    .filter(
+      (t) =>
+        t.user.toLowerCase().includes(search.toLowerCase()) ||
+        t.issue.toLowerCase().includes(search.toLowerCase()) ||
+        t.id.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      const result = String(a[sortKey]).localeCompare(String(b[sortKey]))
+      return sortAsc ? result : -result
+    })
+
+  const totalPages = Math.max(1, Math.ceil(filteredTickets.length / pageSize))
+  const paginatedTickets = filteredTickets.slice((page - 1) * pageSize, page * pageSize)
 
   return (
     <div className="md:ml-56 pt-20 md:pt-8 p-8 min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
@@ -108,15 +133,27 @@ function Tickets() {
             <table className="w-full text-sm min-w-[650px]">
               <thead className="bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-left">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Ticket</th>
-                  <th className="px-5 py-3 font-medium">User</th>
-                  <th className="px-5 py-3 font-medium">Issue</th>
-                  <th className="px-5 py-3 font-medium">Priority</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
+                  {([
+                    ['id', 'Ticket'],
+                    ['user', 'User'],
+                    ['issue', 'Issue'],
+                    ['priority', 'Priority'],
+                    ['status', 'Status'],
+                  ] as [keyof Ticket, string][]).map(([key, label]) => (
+                    <th key={key} className="px-5 py-3 font-medium">
+                      <button
+                        onClick={() => handleSort(key)}
+                        className="flex items-center gap-1 hover:text-slate-900 dark:hover:text-white transition"
+                      >
+                        {label}
+                        <ArrowUpDown size={12} className={sortKey === key ? 'text-teal-500' : 'text-slate-400'} />
+                      </button>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {filteredTickets.map((t) => (
+                {paginatedTickets.map((t) => (
                   <tr key={t.id} className="border-t border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
                     <td className="px-5 py-4 text-slate-700 dark:text-slate-300 font-medium">{t.id}</td>
                     <td className="px-5 py-4 text-slate-700 dark:text-slate-300">{t.user}</td>
@@ -131,6 +168,30 @@ function Tickets() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div className="flex items-center justify-between mt-4 text-sm text-slate-500 dark:text-slate-400">
+            <span>
+              Page {page} of {totalPages}
+            </span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                aria-label="Previous page"
+                className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                aria-label="Next page"
+                className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
         </FadeIn>
       )}
