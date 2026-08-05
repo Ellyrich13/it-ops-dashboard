@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ShieldCheck } from 'lucide-react'
+import { ShieldCheck, Moon, Sun } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 
 function Login() {
   const { login } = useAuth()
+  const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -25,8 +27,16 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-6 transition-colors">
-      <div className="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-6 transition-colors relative">
+      <button
+        onClick={toggleTheme}
+        aria-label="Toggle dark mode"
+        className="absolute top-6 right-6 bg-slate-800 dark:bg-slate-700 text-white w-9 h-9 rounded-full flex items-center justify-center"
+      >
+        {isDark ? <Moon size={16} /> : <Sun size={16} />}
+      </button>
+
+      <div className="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 transition-colors">
         <div className="flex flex-col items-center mb-6">
           <div className="w-12 h-12 rounded-full bg-teal-500/10 flex items-center justify-center mb-3">
             <ShieldCheck className="text-teal-500" size={22} />

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import ProtectedRoute from './components/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
@@ -12,12 +12,14 @@ import Settings from './pages/Settings'
 
 function App() {
   const { user } = useAuth()
+  const location = useLocation()
+  const showSidebar = Boolean(user) && location.pathname !== '/login'
 
   return (
     <div>
-      {user && <Sidebar />}
+      {showSidebar && <Sidebar />}
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
         <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
         <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />

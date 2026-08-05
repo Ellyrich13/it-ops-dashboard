@@ -1,18 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Moon, Sun, Menu, X, LogOut } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 
 function Sidebar() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const { isDark, toggleTheme } = useTheme()
   const [open, setOpen] = useState(false)
-  const [isDark, setIsDark] = useState(true)
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark)
-  }, [isDark])
 
   function handleLogout() {
     logout()
@@ -36,7 +33,7 @@ function Sidebar() {
         </span>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setIsDark(!isDark)}
+            onClick={toggleTheme}
             className="bg-slate-800 dark:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm"
           >
             {isDark ? <Moon size={14} /> : <Sun size={14} />}
@@ -61,7 +58,7 @@ function Sidebar() {
             <span>🖥️</span>IT Ops
           </h1>
           <button
-            onClick={() => setIsDark(!isDark)}
+            onClick={toggleTheme}
             className="bg-slate-800 dark:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm"
           >
             {isDark ? <Moon size={14} /> : <Sun size={14} />}
