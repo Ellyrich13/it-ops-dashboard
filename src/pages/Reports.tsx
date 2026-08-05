@@ -1,5 +1,5 @@
-import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from 'recharts'
-import { ticketsByType, resolutionTrend } from '../data/reports'
+import { PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, CartesianGrid } from 'recharts'
+import { ticketsByType, resolutionTrend, incidentTrends, slaCompliance } from '../data/reports'
 
 const COLORS = ['#14b8a6', '#3b82f6', '#f59e0b', '#8b5cf6']
 
@@ -9,7 +9,7 @@ function Reports() {
       <h1 className="text-2xl font-bold mb-1 tracking-tight">Reports</h1>
       <div className="w-10 h-1 bg-teal-500 rounded-full mb-8" />
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 mb-6">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 transition-colors">
           <h2 className="font-semibold mb-4">Tickets by Type</h2>
           <ResponsiveContainer width="100%" height={260}>
@@ -35,6 +35,41 @@ function Reports() {
               <Line type="monotone" dataKey="avgHours" stroke="#14b8a6" strokeWidth={2} dot={{ fill: '#14b8a6' }} />
             </LineChart>
           </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 transition-colors">
+          <h2 className="font-semibold mb-4">Incident Trends</h2>
+          <ResponsiveContainer width="100%" height={240}>
+            <AreaChart data={incidentTrends}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
+              <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
+              <YAxis stroke="#94a3b8" fontSize={12} />
+              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }} />
+              <Area type="monotone" dataKey="incidents" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.2} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 transition-colors">
+          <h2 className="font-semibold mb-4">SLA Compliance by Category</h2>
+          <div className="space-y-4 mt-2">
+            {slaCompliance.map((item) => (
+              <div key={item.category}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-slate-600 dark:text-slate-300">{item.category}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{item.compliance}%</span>
+                </div>
+                <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${item.compliance >= 95 ? 'bg-teal-500' : 'bg-yellow-500'}`}
+                    style={{ width: `${item.compliance}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

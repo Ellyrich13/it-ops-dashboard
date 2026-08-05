@@ -47,3 +47,12 @@ export interface ResolutionMonth {
   month: string
   avgHours: number
 }
+export interface IncidentTrend {
+  month: string
+  incidents: number
+}
+
+export interface SlaCompliance {
+  category: string
+  compliance: number
+}
