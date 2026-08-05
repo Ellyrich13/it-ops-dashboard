@@ -1,5 +1,8 @@
 import { Routes, Route } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
+import ProtectedRoute from './components/ProtectedRoute'
+import { useAuth } from './context/AuthContext'
+import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Users from './pages/Users'
 import Tickets from './pages/Tickets'
@@ -8,16 +11,19 @@ import Reports from './pages/Reports'
 import Settings from './pages/Settings'
 
 function App() {
+  const { user } = useAuth()
+
   return (
     <div>
-      <Sidebar />
+      {user && <Sidebar />}
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/users" element={<Users />} />
-        <Route path="/tickets" element={<Tickets />} />
-        <Route path="/assets" element={<Assets />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+        <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
+        <Route path="/assets" element={<ProtectedRoute><Assets /></ProtectedRoute>} />
+        <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       </Routes>
     </div>
   )
