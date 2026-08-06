@@ -47,13 +47,20 @@ function Tickets() {
     }
   }
 
-  useEffect(() => {
-    loadTickets()
-  }, [])
+  function handleSearchChange(value: string) {
+    setSearch(value)
+    setPage(1)
+  }
 
   useEffect(() => {
-    setPage(1)
-  }, [search])
+    // Fetch-on-mount: this is the standard pattern for loading data when a
+    // component first renders. loadTickets() calls setLoading/setError/setTickets
+    // internally, which the newer set-state-in-effect lint rule flags — but this
+    // effect synchronizes component state with an external data source (the API),
+    // which is exactly what effects are for.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadTickets()
+  }, [])
 
   const filteredTickets = tickets
     .filter(
@@ -92,7 +99,7 @@ function Tickets() {
         <input
           type="text"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Search tickets..."
           aria-label="Search tickets"
           className="w-full pl-9 pr-4 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm placeholder-slate-400"

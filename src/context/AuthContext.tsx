@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, type ReactNode } from 'react'
 
 interface AuthUser {
   name: string
@@ -15,12 +15,10 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 const STORAGE_KEY = 'it-ops-auth-user'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null)
-
-  useEffect(() => {
+  const [user, setUser] = useState<AuthUser | null>(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) setUser(JSON.parse(stored))
-  }, [])
+    return stored ? JSON.parse(stored) : null
+  })
 
   async function login(email: string, password: string) {
     // Mock authentication — frontend-only demo flow, no real backend.
@@ -43,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- co-locating the hook with its Provider is intentional and standard for Context modules
 export function useAuth() {
   const ctx = useContext(AuthContext)
   if (!ctx) throw new Error('useAuth must be used within an AuthProvider')
