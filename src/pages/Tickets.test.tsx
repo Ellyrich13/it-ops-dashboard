@@ -19,7 +19,7 @@ describe('Tickets page', () => {
         <Tickets />
       </BrowserRouter>
     )
-    const ticketCell = await screen.findByText('Cannot access email')
+    const ticketCell = await screen.findByText('New laptop setup')
     expect(ticketCell).toBeInTheDocument()
   })
 })
