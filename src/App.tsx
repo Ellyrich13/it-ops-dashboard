@@ -9,6 +9,7 @@ import Tickets from './pages/Tickets'
 import Assets from './pages/Assets'
 import Reports from './pages/Reports'
 import Settings from './pages/Settings'
+import NotFound from './pages/NotFound'
 
 function App() {
   const { user } = useAuth()
@@ -26,6 +27,7 @@ function App() {
         <Route path="/assets" element={<ProtectedRoute><Assets /></ProtectedRoute>} />
         <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   )
